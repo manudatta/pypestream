@@ -3,9 +3,12 @@ import sqlite3
 from flask import current_app, g
 from flask_sqlalchemy import SQLAlchemy
 
-orm = SQLAlchemy()
+db = SQLAlchemy()
+
+
 def init_db(app):
-    orm.init_app(app)
+    db.init_app(app)
+
 
 def get_db():
     if "db" not in g:

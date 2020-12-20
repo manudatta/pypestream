@@ -2,21 +2,20 @@ import sqlite3
 
 from flask import current_app, g
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 
 db = SQLAlchemy()
 
 
 def init_db(app):
     db.init_app(app)
+    migrate = Migrate(app, db)
 
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-
+        g.db = db
     return g.db
 
 

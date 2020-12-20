@@ -1,11 +1,9 @@
-import os
 import random
-import tempfile
 
 import pytest
 from faker import Faker
 
-from lendingapp import create_app, User, Book
+from lendingapp import create_app, User, Book, models
 from lendingapp.db import get_db, init_db
 
 TOP_LEVEL_GENRE_CLASSIFICATION = ["Fiction", "Nonfiction"]
@@ -90,6 +88,7 @@ def db(app):
     with app.app_context():
         init_db(app)
         test_db = get_db()
+        test_db.drop_all()
         test_db.create_all()
         yield test_db
 
@@ -115,14 +114,37 @@ def all_book_genre():
     return fiction + non_fiction
 
 
+def book_factory():
+    while True:
+        faker = Faker()
+        fake_book_title = faker.text()
+        book_genre = random.choice(
+            GENRE_DICT[random.choice(TOP_LEVEL_GENRE_CLASSIFICATION)]
+        )
+        book = Book(title=fake_book_title, genre=book_genre)
+        yield book
+
+
 @pytest.fixture()
-def new_book(db, book_genre):
-    faker = Faker()
-    fake_book_title = faker.text()
-    book = Book(title=fake_book_title, genre=book_genre)
+def new_book(db):
+    book = next(book_factory())
     db.session.add(book)
-    db.session.flush()
+    db.session.commit()
     return book
+
+
+@pytest.fixture()
+def books_more_than_quota(db, new_book):
+    i = 0
+    factory = book_factory()
+    books = []
+    while i < models.BORROWING_QUOTA + 1:
+        book = next(factory)
+        books.append(book)
+        db.session.add(book)
+        i += 1
+    db.session.commit()
+    return books
 
 
 @pytest.fixture

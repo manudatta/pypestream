@@ -6,7 +6,7 @@ from flask import Flask
 #### Application Factory Function ####
 ######################################
 from lendingapp import db
-from .models import User
+from .models import User, Book
 
 
 def create_app(config_filename="lendingapp.cfg"):

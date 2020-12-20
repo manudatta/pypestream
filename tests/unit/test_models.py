@@ -29,3 +29,14 @@ def test_new_user_with_fixture(new_user):
     """
     assert new_user.borrowing_limit == 3, "default borrowing limit for user is correct"
     assert new_user.id is not None, "user id is populated"
+
+
+def test_new_book_with_fixture(new_book, all_book_genre):
+    """
+    GIVEN a Book model
+    WHEN a new Book is created via fixture
+    THEN check the id, title, and genre fields are defined correctly
+    """
+    assert new_book.id is not None, "book id is populated"
+    assert len(new_book.title) > 1, "book title is not 0 length"
+    assert new_book.genre in all_book_genre

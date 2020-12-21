@@ -103,6 +103,16 @@ def new_user(db):
     return user
 
 
+@pytest.fixture
+def second_user(db):
+    faker = Faker()
+    fake_name = faker.name()
+    user = User(name=fake_name)
+    db.session.add(user)
+    db.session.flush()
+    return user
+
+
 @pytest.fixture()
 def book_genre():
     return random.choice(GENRE_DICT[random.choice(TOP_LEVEL_GENRE_CLASSIFICATION)])
@@ -145,16 +155,6 @@ def books_more_than_quota(db, new_book):
         i += 1
     db.session.commit()
     return books
-
-
-@pytest.fixture
-def client(app):
-    return app.test_client()
-
-
-@pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
 
 
 @pytest.fixture

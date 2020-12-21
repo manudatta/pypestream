@@ -31,6 +31,15 @@ class Checkout(db.Model):
     user = db.relationship("User", backref="borrowed_books_checkouts")
     db.UniqueConstraint("user_id", "book_id")
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "book_id": self.book_id,
+            "due_at": str(self.due_at),
+            "borrowed_at": str(self.borrowed_at),
+        }
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,6 +53,9 @@ class Book(db.Model):
     title = db.Column(db.String(128))
     genre = db.Column(db.Text)
     borrower = db.relationship("User", uselist=False, secondary="checkout")
+
+    def to_json(self):
+        return {"id": self.id, "title": self.title, "genre": self.genre}
 
 
 def checkout(user, book):
